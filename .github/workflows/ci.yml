@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Test frontend validator with offline fixtures
+        run: node --test tests/validate-frontend.ids.test.js tests/validate-frontend.resolve.test.js
+
       - name: Validate pages and local assets
         run: node scripts/validate-frontend.mjs
 
