@@ -1,5 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, extname, join, normalize, relative, resolve } from "node:path";
+import { extname, join, relative, resolve } from "node:path";
+
+import { resolveLocalAsset } from "./frontend-assets.mjs";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const frontendRoot = join(repositoryRoot, "frontend");
@@ -43,8 +45,8 @@ for (const file of htmlFiles) {
 
   const references = [...source.matchAll(/\s(?:src|href)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const reference of references) {
-    if (/^(?:https?:|mailto:|tel:|data:|#)/i.test(reference)) continue;
-    const localPath = normalize(join(dirname(file), reference.split(/[?#]/, 1)[0]));
+    const localPath = resolveLocalAsset(file, reference);
+    if (localPath === null) continue;
     if (!existsSync(localPath)) report(file, `references missing local asset '${reference}'`);
   }
 }
